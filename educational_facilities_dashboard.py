@@ -7,7 +7,7 @@ import plotly.express as px
 #set config page
 st.set_page_config(
     page_title="Educational Facilities in Nigeria Dashboard",
-    page_icon="📗",
+    page_icon="📖",
     layout="wide"
  )
 
@@ -23,7 +23,7 @@ def load_data():
 
 
 def create_sidebar_filters(df):
-    st.sidebar.header("Educational Filters")
+    st.sidebar.header("Interactive Filters")
 
     Facility_Display_Type = st.sidebar.multiselect(
         "Select Facility_Type_Display",
@@ -46,30 +46,30 @@ def create_sidebar_filters(df):
 
     return Facility_Display_Type, Management, Unique_LGA
 
-def filter_data(df, Facility_Display_Type, Management, PHCN_Electricity):
-    filtered_df = df[df['Facility_Display_Type'].isin(Facility_Display_Type) & df['Management'].isin(Management)]
+def filter_data(df, Facility_Display_Type, Management, Unique_LGA):
+    filtered_df = df[df['Facility_Display_Type'].isin(Facility_Display_Type) & df['Management'].isin(Management) & df['Unique_LGA'].isin(Unique_LGA)]
     return filtered_df
 
 def display_metrics(filtered_df):
     col1, col2, col3, col4, col5 = st.columns(5)
 
     with col1:
-        st.metric("🏨 Total School", f"{len(filtered_df):,.2f}")
+        st.metric("🏨 Total Num Schools", f"{len(filtered_df):,.2f}")
 
     with col2:
-        st.metric("👨‍👩‍👧‍👦 Num Total Student", f"{len (filtered_df):,.2f}")
+        st.metric("👨‍👩‍👧‍👦 Total Num Students", f"{len (filtered_df):,.2f}")
 
     with col3:
         avg_students = filtered_df['Total_Students_Number'].mean() if len(filtered_df) > 0 else 0
-        st.metric("🤷‍♂️ avg_students", f"{avg_students:,.2f}")
+        st.metric("🤷‍♂️ Average Students", f"{avg_students:,.2f}")
 
     with col4:
         electricity_perctg = (filtered_df['PHCN_Electricity'] == True).sum() / len(filtered_df) * 100 if len(filtered_df) > 0 else 0
-        st.metric("💡 PHCN_Electricity", f"{electricity_perctg:,.1f}%")
+        st.metric("💡 PHCN Electricity", f"{electricity_perctg:,.1f}%")
 
     with col5:
         water_supply_pct = (filtered_df['Improved_Water_Supply'] == True).sum() / len(filtered_df) * 100 if len(filtered_df) > 0 else 0
-        st.metric("💧Improved_Water_Supply", f"{water_supply_pct:.1f}%")
+        st.metric("💧Improved Water Supply", f"{water_supply_pct:.1f}%")
 
 def display_charts(filtered_df):
     if len(filtered_df) == 0:
@@ -78,11 +78,12 @@ def display_charts(filtered_df):
     col1, col2 = st.columns(2)
 
     
-    st.subheader("DISTRIBUTION OF SCHOOL TYPES")
+    #st.subheader("DISTRIBUTION OF SCHOOL TYPES")
     facility_type = filtered_df['Facility_Display_Type'].value_counts()
     fig1 = px.bar(
         x=facility_type.values,
         y=facility_type.index,
+        title="DISTRIBUTION OF SCHOOL TYPES"
     )
     fig1.update_layout(xaxis_title="Count", yaxis_title="SCHOOL TYPES")
     st.plotly_chart(fig1, width='stretch')
@@ -102,7 +103,7 @@ def display_charts(filtered_df):
             x='Management',
             y=['Total_Students_Number', 'Total_Teachers'],
             barmode='group',
-            title='Public vs Private Schools: Average Students and Teachers',
+            title='PUBLIC VS PRIVATE SCHOOL: AVERAGE STUDENTS AND TEACHERS',
             labels={
                 'Management': 'School Management',
                 'value': 'Average Count',
@@ -127,7 +128,7 @@ def display_charts(filtered_df):
             access,
             values='Percentage',
             names='Category',
-            title=' Water and Sanitation access'
+            title='WATER AND SANITATION ACCESS'
         )
         st.plotly_chart(fig4, width='stretch')
 
@@ -140,17 +141,17 @@ def display_charts(filtered_df):
         electricity_perctg,
         names='Electricity',
         values='Count',
-        title='Electricity Availability in Schools'
+        title='ELECTRICITY AVAILABILITY IN SCHOOLS'
         )
         st.plotly_chart(fig5, width='stretch')
 
     with col4:
         fig6 = px.scatter_mapbox(filtered_df,
-            lat='latitude',
-            lon='longitude',
+            lat='Latitude',
+            lon='Longitude',
             hover_name='Facility_Name',
-            zoom=5,
-            height=700
+            zoom=4,
+            height=600
         )
         fig6.update_layout(
             mapbox_style='open-street-map'
@@ -178,29 +179,16 @@ def main():
 
     st.title("Educational Facilities in Nigeria Dashboard")
     st.markdown("---")
+
     #display metrics
     display_metrics(filtered_df)
 
     # display chart
     display_charts(filtered_df)
+
     # display table_data
     display_table_data(filtered_df)
 
-#st.subheader("Insights & Recommendations")
-
-# st.markdown("""
-# *Major Findings*
-# - Many schools lack reliable electricity access.
-# - Water and sanitation facilities are not evenly distributed across Nigeria.
-# - Public schools generally serve larger student populations than private schools.
-# - Some states have significantly higher school densities than others.
-
-# *Recommendations*
-# - Prioritize investment in electricity and sanitation infrastructure.
-# - Allocate more teachers to schools with high student-to-teacher ratios.
-# - Use geographic data to target underserved LGAs and states.
-# - Support data-driven planning through continuous monitoring of educational facilities.
-# """)
 
 main()
 
