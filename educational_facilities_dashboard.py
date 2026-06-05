@@ -57,7 +57,7 @@ def display_metrics(filtered_df):
         st.metric("🏨 Total Num Schools", f"{len(filtered_df):,.2f}")
 
     with col2:
-        st.metric("👨‍👩‍👧‍👦 Total Num Students", f"{len (filtered_df):,.2f}")
+        st.metric("👨‍👩‍👧‍👦 Total Num Students", f"{len(filtered_df):,.2f}")
 
     with col3:
         avg_students = filtered_df['Total_Students_Number'].mean() if len(filtered_df) > 0 else 0
@@ -85,7 +85,7 @@ def display_charts(filtered_df):
         y=facility_type.index,
         title="DISTRIBUTION OF SCHOOL TYPES"
     )
-    fig1.update_layout(xaxis_title="Count", yaxis_title="SCHOOL TYPES")
+    fig1.update_layout(xaxis_title=" School Count", yaxis_title="School Type")
     st.plotly_chart(fig1, width='stretch')
     
 
