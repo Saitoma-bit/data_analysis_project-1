@@ -54,7 +54,7 @@ def display_metrics(filtered_df):
     col1, col2, col3, col4, col5 = st.columns(5)
 
     with col1:
-        st.metric("🏨 Total Num Schools", f"{len(filtered_df):,.2f}")
+        st.metric("🏨 Total Schools", f"{len(filtered_df):,.2f}")
 
     with col2:
         total_stud = filtered_df['Total_Students_Number'].sum() if len(filtered_df) > 0 else 0
